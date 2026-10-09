@@ -173,60 +173,12 @@ class FoodStorageTest {
     }
 
     @Test
-    @DisplayName("9. displayAll() and every search on an empty unit throw")
-    void displayAllAndSearchesOnEmptyThrow() {
-        assertAll(
-                () -> assertThrows(StorageEmptyException.class, () -> storage.displayAll()),
-                () -> assertThrows(StorageEmptyException.class,
-                        () -> storage.searchByName(FoodType.PIZZA)),
-                () -> assertThrows(StorageEmptyException.class,
-                        () -> storage.searchByWeightRange(100, 500)),
-                () -> assertThrows(StorageEmptyException.class,
-                        () -> storage.searchByBestBeforeRange(
-                                LocalDate.now(), LocalDate.now().plusDays(14))));
-    }
+    @DisplayName("9. displayAll() on an empty unit throws StorageEmptyException")
+    void displayAllOnEmptyThrows() {
+        StorageEmptyException thrown = assertThrows(StorageEmptyException.class,
+                () -> storage.displayAll());
 
-    @Test
-    @DisplayName("10. Search by name returns every match with its position from the front")
-    void searchByNameReturnsMatchesWithPositions() throws Exception {
-        storage.add(tray(FoodType.PIZZA, 300, 2));      // ends at position 3
-        storage.add(tray(FoodType.BURGER, 200, 3));     // ends at position 2
-        storage.add(tray(FoodType.PIZZA, 450, 4));      // ends at position 1
-
-        List<SearchResult> pizzas = storage.searchByName(FoodType.PIZZA);
-        List<SearchResult> sandwiches = storage.searchByName(FoodType.SANDWICH);
-
-        assertAll(
-                () -> assertEquals(2, pizzas.size(), "both pizzas should be found"),
-                () -> assertEquals(1, pizzas.get(0).position(), "positions are 1-based"),
-                () -> assertEquals(450, pizzas.get(0).item().getWeightGrams()),
-                () -> assertEquals(3, pizzas.get(1).position()),
-                () -> assertEquals(300, pizzas.get(1).item().getWeightGrams()),
-                () -> assertTrue(sandwiches.isEmpty(), "no sandwich is stored"),
-                () -> assertThrows(IllegalArgumentException.class,
-                        () -> storage.searchByName(null)));
-    }
-
-    @Test
-    @DisplayName("11. The weight and date searches accept reversed bounds")
-    void searchRangesAcceptReversedBounds() throws Exception {
-        storage.add(tray(FoodType.FRIES, 150, 1));
-        storage.add(tray(FoodType.BURGER, 300, 6));
-        storage.add(tray(FoodType.PIZZA, 800, 13));
-
-        List<SearchResult> byWeight = storage.searchByWeightRange(500, 100);
-        List<SearchResult> byWeightSame = storage.searchByWeightRange(100, 500);
-        List<SearchResult> byDate = storage.searchByBestBeforeRange(
-                LocalDate.now().plusDays(7), LocalDate.now());
-        List<SearchResult> noMatch = storage.searchByWeightRange(2000, 3000);
-
-        assertAll(
-                () -> assertEquals(2, byWeight.size(), "150 g and 300 g fall in 100-500"),
-                () -> assertEquals(byWeightSame.size(), byWeight.size(),
-                        "swapping the bounds must give the same answer"),
-                () -> assertEquals(2, byDate.size(), "today to +7 days covers +1 and +6"),
-                () -> assertTrue(noMatch.isEmpty(), "nothing weighs 2-3 kg"),
-                () -> assertThrows(IllegalArgumentException.class,
-                        () -> storage.searchByBestBeforeRange(null, LocalDate.now())));
+        assertTrue(thrown.getMessage().contains("EMPTY"),
+                "the message should tell the user the unit is empty");
     }
 }

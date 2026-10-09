@@ -3,11 +3,8 @@ package foodstorage.datastructure;
 import foodstorage.exception.StorageEmptyException;
 import foodstorage.exception.StorageFullException;
 import foodstorage.model.FoodItem;
-import foodstorage.model.FoodType;
 import foodstorage.model.StorageMode;
 
-import java.time.LocalDate;
-import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
@@ -139,91 +136,6 @@ public class FoodStorage {
     }
 
     /**
-     * Finds every tray of one food. Linear search, O(n), because the trays are
-     * not sorted by name - with at most 8 trays that is at most 8 comparisons.
-     *
-     * @param type the food to look for, not null
-     * @return the matches with their positions, empty when nothing matches
-     * @throws StorageEmptyException    if the unit holds no trays
-     * @throws IllegalArgumentException if type is null
-     */
-    public List<SearchResult> searchByName(FoodType type) throws StorageEmptyException {
-        if (type == null) {
-            throw new IllegalArgumentException("Food type to search for cannot be null.");
-        }
-        requireNotEmptyForSearch();
-        List<SearchResult> matches = new ArrayList<>();
-        for (int i = 0; i < trays.size(); i++) {
-            FoodItem item = trays.get(i);
-            if (item.getType() == type) {
-                matches.add(new SearchResult(item, i + 1));
-            }
-        }
-        return matches;
-    }
-
-    /**
-     * Finds every tray whose weight falls inside a range, inclusive. O(n).
-     *
-     * <p>The bounds are swapped automatically when they arrive the wrong way
-     * round, so "500 to 100" means the same as "100 to 500".</p>
-     *
-     * @param minGrams one end of the range
-     * @param maxGrams the other end of the range
-     * @return the matches with their positions, empty when nothing matches
-     * @throws StorageEmptyException if the unit holds no trays
-     */
-    public List<SearchResult> searchByWeightRange(double minGrams, double maxGrams)
-            throws StorageEmptyException {
-        requireNotEmptyForSearch();
-        double low = Math.min(minGrams, maxGrams);
-        double high = Math.max(minGrams, maxGrams);
-
-        List<SearchResult> matches = new ArrayList<>();
-        for (int i = 0; i < trays.size(); i++) {
-            FoodItem item = trays.get(i);
-            double weight = item.getWeightGrams();
-            if (weight >= low && weight <= high) {
-                matches.add(new SearchResult(item, i + 1));
-            }
-        }
-        return matches;
-    }
-
-    /**
-     * Finds every tray whose best-before date falls inside a range, inclusive.
-     * O(n).
-     *
-     * <p>As with the weight search, reversed bounds are swapped
-     * automatically.</p>
-     *
-     * @param from one end of the range, not null
-     * @param to   the other end of the range, not null
-     * @return the matches with their positions, empty when nothing matches
-     * @throws StorageEmptyException    if the unit holds no trays
-     * @throws IllegalArgumentException if either date is null
-     */
-    public List<SearchResult> searchByBestBeforeRange(LocalDate from, LocalDate to)
-            throws StorageEmptyException {
-        if (from == null || to == null) {
-            throw new IllegalArgumentException("Both dates of the range are required.");
-        }
-        requireNotEmptyForSearch();
-        LocalDate low = from.isAfter(to) ? to : from;
-        LocalDate high = from.isAfter(to) ? from : to;
-
-        List<SearchResult> matches = new ArrayList<>();
-        for (int i = 0; i < trays.size(); i++) {
-            FoodItem item = trays.get(i);
-            LocalDate bestBefore = item.getBestBefore();
-            if (!bestBefore.isBefore(low) && !bestBefore.isAfter(high)) {
-                matches.add(new SearchResult(item, i + 1));
-            }
-        }
-        return matches;
-    }
-
-    /**
      * Switches the chef's working mode. No tray moves. O(1).
      *
      * @param mode the new mode, not null
@@ -266,12 +178,6 @@ public class FoodStorage {
      */
     public int frontIndex() {
         return trays.frontIndex();
-    }
-
-    private void requireNotEmptyForSearch() throws StorageEmptyException {
-        if (trays.isEmpty()) {
-            throw StorageEmptyException.forOperation("search");
-        }
     }
 
     @Override
