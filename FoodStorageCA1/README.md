@@ -156,3 +156,85 @@ packages).
 
 ## 5. How to run it
 
+### NetBeans (recommended)
+
+1. Unzip the project somewhere **outside OneDrive and Downloads**, for example
+   `Documents\NetBeansProjects`.
+2. **File → Open Project** and select the `FoodStorageCA1` folder (it shows a
+   Maven icon).
+3. Wait for NetBeans to download JUnit the first time (progress bar, bottom right).
+4. **Right-click the project → Run.** The menu appears in the Output window; type
+   your answers there.
+5. **Right-click the project → Test.** The Test Results window shows
+   **27 tests passed**.
+
+If NetBeans asks for a main class, choose `foodstorage.ui.FoodStorageApp`.
+
+### Command line
+
+```bash
+mvn test                 # runs the 27 JUnit tests
+mvn compile exec:java    # runs the application
+```
+
+## 6. Validation and testing
+
+**27 JUnit 5 tests in 4 files:**
+
+| File | Tests | Covers |
+|---|---|---|
+| `CircularDequeTest` | 7 | Stack order, queue order, the wrap-around over 100 passes, the full and empty errors, `get`/`toList` ordering |
+| `FoodStorageTest` | 9 | Both chef modes, mode switching without reordering, the 9th-tray refusal, every empty-storage error |
+| `FoodItemTest` | 6 | Every validation rule, including the exact boundaries (1 g, 5000 g, today, +14 days) |
+| `StorageMenuTest` | 5 | Types scripted input into the **real** menu and checks the messages a user would see |
+
+Input is validated twice on purpose: `InputHelper` re-asks until the input is
+valid, and `FoodItem`'s constructor checks the same rules again, so an invalid
+tray cannot exist even if a caller skips the helper.
+
+### Manual test cases for the demo
+
+| # | Input | Expected result |
+|---|---|---|
+| 1 | Option 2, 3 or 4 before adding anything | "Storage is EMPTY", app keeps running |
+| 2 | Food name `cake`, then `9` | "not a food we store", asks again |
+| 3 | Weight `abc`, then `-5`, then `99999` | "not a valid number" / "out of range" |
+| 4 | Date `31/02/2026` | "not a valid date" (strict parsing) |
+| 5 | Yesterday's date | "cannot be in the past" |
+| 6 | A date 20 days ahead | "is too far ahead" |
+| 7 | `pizza`, `350`, a date 5 days ahead | "Added at the FRONT" with full details and time added |
+| 8 | Add 8 trays, then try a 9th | "Storage is FULL" — the details are not even asked |
+| 9 | Menu option `42` or `x` | "out of range" / "not a whole number" |
+| 10 | Remove in Stack mode, switch (5), remove in Queue mode | Front tray out, then back tray out |
+| 11 | Option 6 | The complexity table printed at runtime |
+| 12 | Option 0, answer `n`, then 0 and `y` | "Exit cancelled", then "Application terminated" |
+
+## 7. Advantages and limitations
+
+**Advantages**
+
+- Add, remove and peek are O(1) — the fastest possible.
+- One structure covers both of the chef's options; switching mode moves no tray.
+- The 8-tray capacity is enforced by the structure itself, not by extra code.
+- Queue mode sends the oldest food out first, which reduces waste.
+- Generic, so the deque is reusable beyond this scenario.
+
+**Limitations**
+
+- Listing every tray is O(n); only the two ends are reachable in O(1).
+- A tray cannot be taken from the middle — only from either end.
+- There is no way to look a tray up by name, weight or date: the unit is not
+  searchable, which is acceptable here because the chef always works from one
+  of the two ends.
+- The capacity cannot grow; a 9th tray is refused rather than resizing the array.
+- Data is held in memory only, so it is lost when the application closes.
+
+## 8. Team contributions
+
+| Member | Responsible for |
+|---|---|
+| Maycon | `CircularDeque`, `FoodStorage`, the `model` package, both exception classes, and their JUnit tests |
+| Grazielle | `FoodStorageApp`, `InputHelper`, `StorageMenu`, the menu tests, this README and the poster |
+
+Commits were pushed from each member's own GitHub account — see the commit
+history for the author of each change.
