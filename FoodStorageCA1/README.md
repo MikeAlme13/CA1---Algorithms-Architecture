@@ -145,3 +145,14 @@ generics (`CircularDeque<T>` works with any type), enums, custom checked
 exceptions, records, and separation of concerns (UI, logic and data in different
 packages).
 
+### Menu
+
+```
+1. Add a tray            4. Display all trays
+2. Remove a tray         5. Change mode (Stack / Queue)
+3. Peek at the top tray  6. Time complexity report
+                         0. Exit (asks to confirm)
+```
+
+## 5. How to run it
+
