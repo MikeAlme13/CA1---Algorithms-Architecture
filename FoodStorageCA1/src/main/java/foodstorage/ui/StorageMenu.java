@@ -45,4 +45,65 @@ public class StorageMenu {
     public StorageMenu(Scanner scanner) {
         this(scanner, System.out);
     }
+    /**
+     * Asks for the working mode, then loops the menu until the user confirms
+     * an exit.
+     */
+    public void run() {
+        printWelcome();
+        storage.setMode(input.readStorageMode());
+        out.println();
+        out.println("Mode set to " + storage.getMode().getDisplayName()
+                + " - " + storage.getMode().getDescription() + ".");
+
+        boolean running = true;
+        while (running) {
+            printMenu();
+            int choice = input.readIntInRange("Your choice (0-6): ", 0, 6);
+            out.println();
+            switch (choice) {
+                case 1 -> addFood();
+                case 2 -> removeFood();
+                case 3 -> peekTop();
+                case 4 -> displayAll();
+                case 5 -> changeMode();
+                case 6 -> printComplexityReport();
+                case 0 -> running = !confirmExit();
+                default -> out.println("Unknown option.");
+            }
+            out.println();
+        }
+    }
+
+    private void printWelcome() {
+        out.println(LINE);
+        out.println("     PARTY FOOD STORAGE UNIT - CA1 Algorithms & Data Structures");
+        out.println(LINE);
+        out.println("The unit holds at most " + FoodStorage.CAPACITY
+                + " trays of food in a circular-array deque.");
+        out.println();
+    }
+
+    private void printMenu() {
+        out.println(LINE);
+        out.printf("  Mode: %-13s   Trays: %d/%d   Free space: %d%n",
+                storage.getMode().getDisplayName(),
+                storage.size(), FoodStorage.CAPACITY, storage.freeSpace());
+        out.println(LINE);
+        out.println("  1. Add a tray of food");
+        out.println("  2. Remove a tray (" + removalEndDescription() + ")");
+        out.println("  3. Peek at the top tray (front side)");
+        out.println("  4. Display all trays");
+        out.println("  5. Change mode (Stack / Queue)");
+        out.println("  6. Time complexity report");
+        out.println("  0. Exit");
+        out.println(THIN_LINE);
+    }
+
+    private String removalEndDescription() {
+        return storage.getMode() == StorageMode.STACK_LIFO
+                ? "from the FRONT, newest first"
+                : "from the BACK, oldest first";
+    }
+
 }
