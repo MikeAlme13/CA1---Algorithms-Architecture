@@ -176,5 +176,39 @@ public class InputHelper {
             }
         }
     }
+    /**
+     * Reads a yes/no answer, re-asking until it is valid.
+     */
+    public boolean readYesNo(String prompt) {
+        while (true) {
+            out.print(prompt);
+            String answer = nextLine().trim().toLowerCase();
+            switch (answer) {
+                case "y":
+                case "yes":
+                    return true;
+                case "n":
+                case "no":
+                    return false;
+                default:
+                    out.println("  >> Please answer y (yes) or n (no).");
+            }
+        }
+    }
+    /**
+     * Asks the chef which working mode to use.
+     */
+    public StorageMode readStorageMode() {
+        out.println("How will the chef work with the unit?");
+        out.println("  1. " + StorageMode.STACK_LIFO.getDisplayName()
+                + " - add and remove on the front side ("
+                + StorageMode.STACK_LIFO.getDescription() + ")");
+        out.println("  2. " + StorageMode.QUEUE_FIFO.getDisplayName()
+                + " - add at the front, remove from the back ("
+                + StorageMode.QUEUE_FIFO.getDescription() + ")  [recommended]");
+        int choice = readIntInRange("Mode (1-2): ", 1, 2);
+        return choice == 1 ? StorageMode.STACK_LIFO : StorageMode.QUEUE_FIFO;
+    }
 
 }
+
