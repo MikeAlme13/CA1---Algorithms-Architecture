@@ -45,6 +45,7 @@ public class StorageMenu {
     public StorageMenu(Scanner scanner) {
         this(scanner, System.out);
     }
+   
     /**
      * Asks for the working mode, then loops the menu until the user confirms
      * an exit.
@@ -105,5 +106,4 @@ public class StorageMenu {
                 ? "from the FRONT, newest first"
                 : "from the BACK, oldest first";
     }
-
 }
