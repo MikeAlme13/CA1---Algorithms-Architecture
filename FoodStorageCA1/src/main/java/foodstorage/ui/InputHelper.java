@@ -1,4 +1,3 @@
-
 package foodstorage.ui;
 
 import foodstorage.model.FoodItem;
@@ -15,32 +14,58 @@ import java.util.Scanner;
 /**
  * Reads and validates everything the user types.
  *
+ * <p>Every read method loops until the input is valid, printing an
+ * explanation each time it is not, so bad input can never reach the model or
+ * crash the application. This is the first of the two validation layers; the
+ * second is {@link FoodItem}'s constructor, which checks the same rules again
+ * so an invalid tray cannot exist even if a caller skips this class.</p>
+ *
+ * <p>The {@link Scanner} and {@link PrintStream} are injected rather than
+ * hard-coded to {@code System.in} / {@code System.out}, which is what lets
+ * {@code StorageMenuTest} feed scripted input into the real menu and read back
+ * the messages a user would see.</p>
+ *
  * @author Grazielle Matsuyama
  */
 public class InputHelper {
 
+    /**
+     * Strict date parsing: {@code uuuu} (proleptic year) rather than
+     * {@code yyyy} (year-of-era) is required, because
+     * {@link ResolverStyle#STRICT} needs an era-independent year field. Strict
+     * mode is what makes 31/02/2026 an error instead of being quietly
+     * resolved to 28/02/2026.
+     */
     private static final DateTimeFormatter STRICT_DATE =
-            DateTimeFormatter.ofPattern("dd/MM/uuuu")
-                    .withResolverStyle(ResolverStyle.STRICT);
+            DateTimeFormatter.ofPattern("dd/MM/uuuu").withResolverStyle(ResolverStyle.STRICT);
 
     private final Scanner scanner;
     private final PrintStream out;
 
+    /**
+     * @param scanner source of user input, not null
+     * @param out     where prompts and error messages are printed, not null
+     */
     public InputHelper(Scanner scanner, PrintStream out) {
         if (scanner == null || out == null) {
-            throw new IllegalArgumentException(
-                    "Scanner and output stream are required.");
+            throw new IllegalArgumentException("Scanner and output stream are required.");
         }
         this.scanner = scanner;
         this.out = out;
     }
 
+    /** Convenience constructor for the real application. */
     public InputHelper(Scanner scanner) {
         this(scanner, System.out);
     }
 
     /**
      * Reads a whole number inside a range, re-asking until it is valid.
+     *
+     * @param prompt text shown before the cursor
+     * @param min    lowest accepted value, inclusive
+     * @param max    highest accepted value, inclusive
+     * @return a valid int between min and max
      */
     public int readIntInRange(String prompt, int min, int max) {
         while (true) {
@@ -62,7 +87,10 @@ public class InputHelper {
     }
 
     /**
-     * Reads one of the five foods by name or by number.
+     * Reads one of the five foods by name or by number, re-asking until the
+     * text matches a food the unit stores.
+     *
+     * @return the chosen food type, never null
      */
     public FoodType readFoodType() {
         while (true) {
@@ -79,17 +107,10 @@ public class InputHelper {
     }
 
     /**
-     * Reads the next line, or fails if the input stream has ended.
-     */
-    private String nextLine() {
-        if (!scanner.hasNextLine()) {
-            throw new IllegalStateException("Input ended while the application was "
-                    + "still waiting for an answer.");
-        }
-        return scanner.nextLine();
-    }
-    /**
-     * Reads the weight of a new tray.
+     * Reads the weight of a new tray, re-asking until it is a number inside
+     * the accepted range.
+     *
+     * @return a valid weight in grams
      */
     public double readWeight() {
         return readDoubleInRange("  Weight in grams ("
@@ -99,7 +120,12 @@ public class InputHelper {
     }
 
     /**
-     * Reads a decimal number inside a range.
+     * Reads a decimal number inside a range, re-asking until it is valid.
+     *
+     * @param prompt text shown before the cursor
+     * @param min    lowest accepted value, inclusive
+     * @param max    highest accepted value, inclusive
+     * @return a valid value between min and max
      */
     public double readDoubleInRange(String prompt, double min, double max) {
         while (true) {
@@ -125,17 +151,11 @@ public class InputHelper {
     }
 
     /**
-     * Formats numbers without unnecessary trailing .0.
-     */
-    private static String trim(double value) {
-        if (value == Math.rint(value) && !Double.isInfinite(value)) {
-            return String.valueOf((long) value);
-        }
-        return String.valueOf(value);
-    }
-
-    /**
-     * Reads the best-before date of a new tray.
+     * Reads the best-before date of a new tray. Applies all three rules from
+     * the brief: a real calendar date, not in the past, and at most 14 days
+     * ahead.
+     *
+     * @return a valid best-before date
      */
     public LocalDate readBestBefore() {
         LocalDate today = LocalDate.now();
@@ -161,7 +181,11 @@ public class InputHelper {
     }
 
     /**
-     * Reads any calendar date with strict parsing.
+     * Reads any calendar date with strict parsing, used for the search range
+     * where past and far-future dates are legitimate.
+     *
+     * @param prompt text shown before the cursor
+     * @return a valid date
      */
     public LocalDate readDate(String prompt) {
         while (true) {
@@ -176,8 +200,12 @@ public class InputHelper {
             }
         }
     }
+
     /**
-     * Reads a yes/no answer, re-asking until it is valid.
+     * Reads a yes/no answer, re-asking until it is one of them.
+     *
+     * @param prompt text shown before the cursor
+     * @return true for yes, false for no
      */
     public boolean readYesNo(String prompt) {
         while (true) {
@@ -195,8 +223,11 @@ public class InputHelper {
             }
         }
     }
+
     /**
-     * Asks the chef which working mode to use.
+     * Asks the chef which of the two working modes to use.
+     *
+     * @return the chosen mode, never null
      */
     public StorageMode readStorageMode() {
         out.println("How will the chef work with the unit?");
@@ -210,5 +241,28 @@ public class InputHelper {
         return choice == 1 ? StorageMode.STACK_LIFO : StorageMode.QUEUE_FIFO;
     }
 
-}
+    /**
+     * Reads the next line, or fails loudly if the input stream has ended.
+     *
+     * @return the raw line typed by the user
+     * @throws IllegalStateException when there is no more input to read
+     */
+    private String nextLine() {
+        if (!scanner.hasNextLine()) {
+            throw new IllegalStateException("Input ended while the application was "
+                    + "still waiting for an answer.");
+        }
+        return scanner.nextLine();
+    }
 
+    /**
+     * @param value a number to show in a message
+     * @return the number without a trailing ".0", so 500.0 prints as "500"
+     */
+    private static String trim(double value) {
+        if (value == Math.rint(value) && !Double.isInfinite(value)) {
+            return String.valueOf((long) value);
+        }
+        return String.valueOf(value);
+    }
+}
