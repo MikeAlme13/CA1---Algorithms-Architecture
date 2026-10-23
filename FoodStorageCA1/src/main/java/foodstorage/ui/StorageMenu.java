@@ -45,6 +45,7 @@ public class StorageMenu {
     public StorageMenu(Scanner scanner) {
         this(scanner, System.out);
     }
+   
     /**
      * Asks for the working mode, then loops the menu until the user confirms
      * an exit.
@@ -104,6 +105,53 @@ public class StorageMenu {
         return storage.getMode() == StorageMode.STACK_LIFO
                 ? "from the FRONT, newest first"
                 : "from the BACK, oldest first";
+    }
+
+
+    // ---------------------------------------------------------------- option 1
+
+    private void addFood() {
+        out.println("ADD A TRAY");
+        if (storage.isFull()) {
+            // Checked before prompting, so the user is not asked for details
+            // that are about to be thrown away.
+            out.println("  >> " + StorageFullException.ofCapacity(FoodStorage.CAPACITY)
+                    .getMessage());
+            return;
+        }
+
+        FoodType type = input.readFoodType();
+        double weight = input.readWeight();
+        LocalDate bestBefore = input.readBestBefore();
+
+        try {
+            FoodItem item = new FoodItem(type, weight, bestBefore);
+            storage.add(item);
+            out.println();
+            out.println("  Added at the FRONT: " + item.toDisplayString());
+            out.println("  The unit now holds " + storage.size() + "/"
+                    + FoodStorage.CAPACITY + " trays.");
+        } catch (StorageFullException e) {
+            out.println("  >> " + e.getMessage());
+        } catch (IllegalArgumentException e) {
+            // Defence in depth: InputHelper should already have stopped this.
+            out.println("  >> Invalid tray rejected: " + e.getMessage());
+        }
+    }
+
+    // ---------------------------------------------------------------- option 2
+
+    private void removeFood() {
+        out.println("REMOVE A TRAY (" + storage.getMode().getDisplayName() + ")");
+        try {
+            FoodItem removed = storage.remove();
+            out.println("  Removed " + removalEndDescription().toUpperCase() + ": "
+                    + removed.toDisplayString());
+            out.println("  The unit now holds " + storage.size() + "/"
+                    + FoodStorage.CAPACITY + " trays.");
+        } catch (StorageEmptyException e) {
+            out.println("  >> " + e.getMessage());
+        }
     }
 
 }
