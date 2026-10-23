@@ -134,4 +134,47 @@ public class InputHelper {
         return String.valueOf(value);
     }
 
+    /**
+     * Reads the best-before date of a new tray.
+     */
+    public LocalDate readBestBefore() {
+        LocalDate today = LocalDate.now();
+        LocalDate latest = today.plusDays(FoodItem.MAX_DAYS_AHEAD);
+        while (true) {
+            out.println("  Best before must be between " + today.format(FoodItem.DATE_FORMAT)
+                    + " and " + latest.format(FoodItem.DATE_FORMAT)
+                    + " (today up to " + FoodItem.MAX_DAYS_AHEAD + " days ahead).");
+            LocalDate date = readDate("  Best-before date (dd/MM/yyyy): ");
+            if (date.isBefore(today)) {
+                out.println("  >> " + date.format(FoodItem.DATE_FORMAT)
+                        + " cannot be in the past. The food would already be out of date.");
+                continue;
+            }
+            if (date.isAfter(latest)) {
+                out.println("  >> " + date.format(FoodItem.DATE_FORMAT)
+                        + " is too far ahead. The unit accepts at most "
+                        + FoodItem.MAX_DAYS_AHEAD + " days from today.");
+                continue;
+            }
+            return date;
+        }
+    }
+
+    /**
+     * Reads any calendar date with strict parsing.
+     */
+    public LocalDate readDate(String prompt) {
+        while (true) {
+            out.print(prompt);
+            String line = nextLine().trim();
+            try {
+                return LocalDate.parse(line, STRICT_DATE);
+            } catch (DateTimeException e) {
+                out.println("  >> \"" + line + "\" is not a valid date. "
+                        + "Use the format dd/MM/yyyy, for example "
+                        + LocalDate.now().plusDays(5).format(FoodItem.DATE_FORMAT) + ".");
+            }
+        }
+    }
+
 }
