@@ -88,5 +88,50 @@ public class InputHelper {
         }
         return scanner.nextLine();
     }
+    /**
+     * Reads the weight of a new tray.
+     */
+    public double readWeight() {
+        return readDoubleInRange("  Weight in grams ("
+                        + (int) FoodItem.MIN_WEIGHT_GRAMS + "-"
+                        + (int) FoodItem.MAX_WEIGHT_GRAMS + "): ",
+                FoodItem.MIN_WEIGHT_GRAMS, FoodItem.MAX_WEIGHT_GRAMS);
+    }
+
+    /**
+     * Reads a decimal number inside a range.
+     */
+    public double readDoubleInRange(String prompt, double min, double max) {
+        while (true) {
+            out.print(prompt);
+            String line = nextLine();
+            try {
+                double value = Double.parseDouble(line.trim().replace(',', '.'));
+                if (Double.isNaN(value) || Double.isInfinite(value)) {
+                    out.println("  >> That is not a valid number.");
+                    continue;
+                }
+                if (value < min || value > max) {
+                    out.println("  >> " + trim(value) + " is out of range. Enter a value between "
+                            + trim(min) + " and " + trim(max) + ".");
+                    continue;
+                }
+                return value;
+            } catch (NumberFormatException e) {
+                out.println("  >> \"" + line.trim() + "\" is not a valid number. Enter a value between "
+                        + trim(min) + " and " + trim(max) + ".");
+            }
+        }
+    }
+
+    /**
+     * Formats numbers without unnecessary trailing .0.
+     */
+    private static String trim(double value) {
+        if (value == Math.rint(value) && !Double.isInfinite(value)) {
+            return String.valueOf((long) value);
+        }
+        return String.valueOf(value);
+    }
 
 }
