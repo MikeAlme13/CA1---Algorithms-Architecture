@@ -45,7 +45,7 @@ public class StorageMenu {
     public StorageMenu(Scanner scanner) {
         this(scanner, System.out);
     }
-   
+
     /**
      * Asks for the working mode, then loops the menu until the user confirms
      * an exit.
@@ -107,7 +107,6 @@ public class StorageMenu {
                 : "from the BACK, oldest first";
     }
 
-
     // ---------------------------------------------------------------- option 1
 
     private void addFood() {
@@ -154,14 +153,15 @@ public class StorageMenu {
         }
     }
 
-
     // ---------------------------------------------------------------- option 3
 
     private void peekTop() {
         out.println("PEEK");
         try {
-            out.println("  Top of the unit (front side): " + storage.peek().toDisplayString());
-            out.println("  Next tray to be removed in " + storage.getMode().getDisplayName()
+            out.println("  Top of the unit (front side): "
+                    + storage.peek().toDisplayString());
+            out.println("  Next tray to be removed in "
+                    + storage.getMode().getDisplayName()
                     + ": " + storage.peekNextToRemove().toDisplayString());
         } catch (StorageEmptyException e) {
             out.println("  >> " + e.getMessage());
@@ -177,13 +177,14 @@ public class StorageMenu {
             for (int i = 0; i < all.size(); i++) {
                 String label = (i == 0 ? " <- FRONT" : "")
                         + (i == all.size() - 1 ? " <- BACK" : "");
-                out.printf("  %d. %s%s%n", i + 1, all.get(i).toDisplayString(), label);
+                out.printf("  %d. %s%s%n",
+                        i + 1, all.get(i).toDisplayString(), label);
             }
             out.println("  " + all.size() + "/" + FoodStorage.CAPACITY
-                    + " trays stored. Front sits at array index " + storage.frontIndex() + ".");
+                    + " trays stored. Front sits at array index "
+                    + storage.frontIndex() + ".");
         } catch (StorageEmptyException e) {
             out.println("  >> " + e.getMessage());
         }
     }
-
 }
