@@ -188,4 +188,23 @@ public class StorageMenu {
         }
     }
 
+    // ---------------------------------------------------------------- option 5
+
+    private void changeMode() {
+        StorageMode current = storage.getMode();
+        StorageMode next = current.other();
+
+        out.println("CHANGE STORAGE MODE");
+        out.println("  Current mode: " + current.getDisplayName());
+        out.println("  New mode: " + next.getDisplayName());
+
+        if (input.readYesNo("  Change mode? (y/n): ")) {
+            storage.setMode(next);
+            out.println("  Mode changed to " + next.getDisplayName() + ".");
+            out.println("  No trays were moved or reordered.");
+        } else {
+            out.println("  Mode change cancelled.");
+        }
+    }
+    
 }
