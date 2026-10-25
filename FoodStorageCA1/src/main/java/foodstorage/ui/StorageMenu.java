@@ -235,4 +235,19 @@ public class StorageMenu {
         out.printf("  %-26s %-12s %-12s%n", operation, time, space);
     }
 
+    // ---------------------------------------------------------------- option 0
+
+    private boolean confirmExit() {
+        out.println("EXIT APPLICATION");
+
+        if (input.readYesNo("  Are you sure you want to exit? (y/n): ")) {
+            out.println("  Application terminated. Goodbye!");
+            return true;
+        }
+
+        out.println("  Exit cancelled. Returning to the main menu.");
+        return false;
+    }
+
+
 }
