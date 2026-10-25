@@ -207,4 +207,32 @@ public class StorageMenu {
         }
     }
     
+    // ---------------------------------------------------------------- option 6
+
+    private void printComplexityReport() {
+        out.println("TIME AND SPACE COMPLEXITY REPORT");
+        out.println(LINE);
+        out.printf("  %-26s %-12s %-12s%n", "Operation", "Time", "Space");
+        out.println(THIN_LINE);
+
+        printRow("Add tray", "O(1)", "O(1)");
+        printRow("Remove tray (Stack)", "O(1)", "O(1)");
+        printRow("Remove tray (Queue)", "O(1)", "O(1)");
+        printRow("Peek tray", "O(1)", "O(1)");
+        printRow("Read by position", "O(1)", "O(1)");
+        printRow("Check empty/full", "O(1)", "O(1)");
+        printRow("Change mode", "O(1)", "O(1)");
+        printRow("Display all trays", "O(n)", "O(n)");
+
+        out.println(THIN_LINE);
+        out.println("  n = number of trays stored (maximum 8).");
+        out.println("  The circular array has a fixed capacity of 8.");
+        out.println("  Overall storage memory: O(8), constant space.");
+        out.println(LINE);
+    }
+
+    private void printRow(String operation, String time, String space) {
+        out.printf("  %-26s %-12s %-12s%n", operation, time, space);
+    }
+
 }
