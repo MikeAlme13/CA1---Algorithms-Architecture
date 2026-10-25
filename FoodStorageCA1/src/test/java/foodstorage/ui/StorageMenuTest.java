@@ -73,4 +73,22 @@ class StorageMenuTest {
                         "the application survived every error and exited normally"));
     }
 
+    @Test
+    @DisplayName("2. A menu choice that is out of range or not a number is re-asked")
+    void invalidMenuChoiceIsRejected() {
+        String output = runMenu(
+                "2",        // Queue mode
+                "42",       // out of range
+                "x",        // not a number
+                "-1",       // out of range
+                "0", "y");  // exit
+
+        assertAll(
+                () -> assertTrue(output.contains("42 is out of range")),
+                () -> assertTrue(output.contains("between 0 and 6")),
+                () -> assertTrue(output.contains("\"x\" is not a whole number")),
+                () -> assertTrue(output.contains("-1 is out of range")),
+                () -> assertTrue(output.contains("Application terminated")));
+    }
+
 }
