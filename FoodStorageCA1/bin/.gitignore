@@ -1,0 +1,17 @@
+# Maven build output
+target/
+# NetBeans
+nbproject/private/
+nbactions.xml
+nb-configuration.xml
+build/
+dist/
+# IDE and OS noise
+.idea/
+*.iml
+.vscode/
+.DS_Store
+Thumbs.db
+desktop.ini
+# Compiled class files
+*.class
