@@ -91,4 +91,42 @@ class StorageMenuTest {
                 () -> assertTrue(output.contains("Application terminated")));
     }
 
+    @Test
+    @DisplayName("3. Bad food name, weight and date are each re-asked until valid")
+    void invalidFoodWeightAndDateAreReAsked() {
+        String tooFarAhead = LocalDate.now().plusDays(20).format(FoodItem.DATE_FORMAT);
+
+        String output = runMenu(
+                "2",                // Queue mode
+                "1",                // add a tray
+                "cake",             // not a food we store
+                "9",                // not a valid number for the food list
+                "pizza",            // valid
+                "abc",              // not a number
+                "-5",               // below the minimum
+                "99999",            // above the maximum
+                "350",              // valid
+                "31/02/2026",       // not a real calendar date
+                "01/01/2020",       // in the past
+                tooFarAhead,        // more than 14 days ahead
+                VALID_DATE,         // valid
+                "4",                // display all
+                "0", "y");          // exit
+
+        assertAll(
+                () -> assertTrue(output.contains("\"cake\" is not a food we store")),
+                () -> assertTrue(output.contains("\"9\" is not a food we store")),
+                () -> assertTrue(output.contains("\"abc\" is not a valid number")),
+                () -> assertTrue(output.contains("-5 is out of range")),
+                () -> assertTrue(output.contains("99999 is out of range")),
+                () -> assertTrue(output.contains("\"31/02/2026\" is not a valid date"),
+                        "strict parsing must reject the 31st of February"),
+                () -> assertTrue(output.contains("cannot be in the past")),
+                () -> assertTrue(output.contains("is too far ahead")),
+                () -> assertTrue(output.contains("Added at the FRONT")),
+                () -> assertTrue(output.contains("Pizza")),
+                () -> assertTrue(output.contains("1/8 trays"),
+                        "the tray count should be shown after the add"));
+    }
+
 }
