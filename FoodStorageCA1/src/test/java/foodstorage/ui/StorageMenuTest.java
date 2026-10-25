@@ -162,4 +162,26 @@ class StorageMenuTest {
                 () -> assertTrue(output.contains("Application terminated")));
     }
 
+    @Test
+    @DisplayName("5. Exit asks for confirmation, and n returns to the menu")
+    void exitIsCancelledThenConfirmed() {
+        String output = runMenu(
+                "2",        // Queue mode
+                "0", "n",   // ask to exit, then change mind
+                "5", "y",   // switch mode while still running
+                "6",        // complexity report
+                "0", "y");  // ask to exit and confirm
+
+        assertAll(
+                () -> assertTrue(output.contains("Exit cancelled"),
+                        "answering n must keep the application running"),
+                () -> assertTrue(output.contains("Mode changed to Stack (LIFO)"),
+                        "the menu kept working after the cancelled exit"),
+                () -> assertTrue(output.contains("No trays were moved")),
+                () -> assertTrue(output.contains("O(1)"),
+                        "the complexity report should have printed"),
+                () -> assertTrue(output.contains("Application terminated")));
+    }
+
+
 }
