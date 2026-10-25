@@ -129,4 +129,37 @@ class StorageMenuTest {
                         "the tray count should be shown after the add"));
     }
 
+    @Test
+    @DisplayName("4. The 9th tray is refused without even asking for its details")
+    void fullStorageRefusesNinthTrayWithoutAskingDetails() {
+        String[] script = new String[2 + 8 * 4 + 3];
+        int i = 0;
+
+        script[i++] = "2";                      // Queue mode
+
+        for (int tray = 0; tray < 8; tray++) {  // fill the unit
+            script[i++] = "1";
+            script[i++] = "burger";
+            script[i++] = "200";
+            script[i++] = VALID_DATE;
+        }
+
+        script[i++] = "1";                      // the 9th add
+        script[i++] = "0";                      // exit
+        script[i] = "y";
+
+        String output = runMenu(script);
+        String afterLastAdd = output.substring(output.lastIndexOf("ADD A TRAY"));
+
+        assertAll(
+                () -> assertTrue(output.contains("8/8 trays"),
+                        "the unit filled up"),
+                () -> assertTrue(output.contains("Storage is FULL"),
+                        "the 9th tray must be refused"),
+                () -> assertTrue(output.contains("maximum of 8 trays")),
+                () -> assertFalse(afterLastAdd.contains("Weight in grams"),
+                        "the details must not be asked for once the unit is full"),
+                () -> assertTrue(output.contains("Application terminated")));
+    }
+
 }
