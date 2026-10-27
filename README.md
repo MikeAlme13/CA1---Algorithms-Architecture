@@ -1,14 +1,16 @@
-# CA1---Algorithms-Architecture
-Group CA
 # Party Food Storage Unit — CA1 Algorithms & Data Structures
 
 A Java console application that models the party food storage unit of a fast-food
 restaurant, built on our own fixed-capacity **circular-array deque**.
 
-
+| | |
+|---|---|
 | **Module** | Algorithms & Data Structures (CA1) |
 | **Team** | Maycon and Grazielle |
 | **Repository** | https://github.com/MikeAlme13/CA1---Algorithms-Architecture |
+| **Java** | JDK 17 or newer |
+| **Build** | Maven (NetBeans opens it with no setup) |
+| **Tests** | 27 JUnit 5 tests, all passing |
 
 ## 1. The scenario
 
@@ -109,7 +111,7 @@ Four packages, so each class has exactly one job. The menu never touches the
 array — it only calls `FoodStorage`.
 
 ```
-src/main/java/foodstorage/
+FoodStorageCA1/src/main/java/foodstorage/
 ├── model/
 │   ├── FoodType.java            enum: the 5 foods, parses user input
 │   ├── FoodItem.java            one tray: type, weight, best-before, time added
@@ -158,10 +160,10 @@ packages).
 
 ### NetBeans (recommended)
 
-1. Unzip the project somewhere **outside OneDrive and Downloads**, for example
-   `Documents\NetBeansProjects`.
-2. **File → Open Project** and select the `FoodStorageCA1` folder (it shows a
-   Maven icon).
+1. Clone the repository (or download the ZIP) somewhere **outside OneDrive and
+   Downloads**, for example `Documents\NetBeansProjects`.
+2. **File → Open Project** and select the `FoodStorageCA1` folder inside it
+   (it shows a Maven icon).
 3. Wait for NetBeans to download JUnit the first time (progress bar, bottom right).
 4. **Right-click the project → Run.** The menu appears in the Output window; type
    your answers there.
@@ -173,6 +175,7 @@ If NetBeans asks for a main class, choose `foodstorage.ui.FoodStorageApp`.
 ### Command line
 
 ```bash
+cd FoodStorageCA1
 mvn test                 # runs the 27 JUnit tests
 mvn compile exec:java    # runs the application
 ```
