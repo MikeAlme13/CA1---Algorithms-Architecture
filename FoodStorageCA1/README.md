@@ -8,7 +8,7 @@ restaurant, built on our own fixed-capacity **circular-array deque**.
 
 | **Module** | Algorithms & Data Structures (CA1) |
 | **Team** | Maycon and Grazielle |
-| **Repository** | https://github.com/MikeAlme13/FoodStorageCA1 |
+| **Repository** | https://github.com/MikeAlme13/CA1---Algorithms-Architecture |
 
 ## 1. The scenario
 
