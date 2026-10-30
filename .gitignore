@@ -1,0 +1,11 @@
+# Ruido do sistema operacional
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# Saida de build e metadados de IDE
+bin/
+target/
+.project
+.classpath
+.settings/
